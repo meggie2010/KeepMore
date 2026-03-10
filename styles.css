@@ -239,7 +239,7 @@ h2 {
 .hero-subtitle {
   font-size: 1.2rem;
   color: var(--color-text-light);
-  max-width: 560px;
+  max-width: 750px;
   margin: 0 auto 0.75rem;
 }
 
