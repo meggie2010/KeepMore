@@ -244,14 +244,29 @@ h2 {
 }
 
 .hero-list {
-  list-style: disc;
+  list-style: none;
   text-align: left;
   display: inline-block;
   margin: 0 auto 2.5rem;
   color: var(--color-text-light);
   font-size: 1.1rem;
   line-height: 1.8;
-  padding-left: 1.25rem;
+  padding-left: 0;
+}
+
+.hero-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-accent);
 }
 
 .hero-actions {
