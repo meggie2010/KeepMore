@@ -272,9 +272,9 @@ h2 {
 .hero-closing {
   font-size: 1.15rem;
   font-style: italic;
-  color: var(--color-text);
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  color: var(--color-accent);
+  margin-top: 0.25rem;
+  margin-bottom: 2rem;
   opacity: 0.85;
 }
 
