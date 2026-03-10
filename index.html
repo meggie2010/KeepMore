@@ -139,96 +139,22 @@
   <!-- Monthly Spending Trends -->
   <section id="spending-trends" class="spending-trends">
     <div class="container">
-      <h2>Monthly Spending Trends</h2>
+      <h2>Your Personal Spending Dashboard</h2>
       <p class="section-subtitle">See how tracking your spending reveals patterns and opportunities to save. Here's an example client dashboard.</p>
 
-      <div class="trends-dashboard">
-        <!-- Month selector -->
-        <div class="trends-controls">
-          <div class="month-tabs">
-            <button class="month-tab" data-month="0">Oct</button>
-            <button class="month-tab" data-month="1">Nov</button>
-            <button class="month-tab" data-month="2">Dec</button>
-            <button class="month-tab" data-month="3">Jan</button>
-            <button class="month-tab" data-month="4">Feb</button>
-            <button class="month-tab active" data-month="5">Mar</button>
-          </div>
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <img src="dashboard-6.png" alt="Dashboard screenshot 6">
         </div>
-
-        <div class="trends-grid">
-          <!-- Bar chart -->
-          <div class="trends-chart-card">
-            <h3>Spending by Category</h3>
-            <div class="chart-bars" id="categoryChart">
-              <div class="chart-bar-row">
-                <span class="bar-label">Housing</span>
-                <div class="bar-track">
-                  <div class="bar-fill" data-category="housing" style="--bar-width: 0%"></div>
-                </div>
-                <span class="bar-value" data-category="housing">$0</span>
-              </div>
-              <div class="chart-bar-row">
-                <span class="bar-label">Food</span>
-                <div class="bar-track">
-                  <div class="bar-fill accent" data-category="food" style="--bar-width: 0%"></div>
-                </div>
-                <span class="bar-value" data-category="food">$0</span>
-              </div>
-              <div class="chart-bar-row">
-                <span class="bar-label">Transport</span>
-                <div class="bar-track">
-                  <div class="bar-fill" data-category="transport" style="--bar-width: 0%"></div>
-                </div>
-                <span class="bar-value" data-category="transport">$0</span>
-              </div>
-              <div class="chart-bar-row">
-                <span class="bar-label">Shopping</span>
-                <div class="bar-track">
-                  <div class="bar-fill accent" data-category="shopping" style="--bar-width: 0%"></div>
-                </div>
-                <span class="bar-value" data-category="shopping">$0</span>
-              </div>
-              <div class="chart-bar-row">
-                <span class="bar-label">Utilities</span>
-                <div class="bar-track">
-                  <div class="bar-fill" data-category="utilities" style="--bar-width: 0%"></div>
-                </div>
-                <span class="bar-value" data-category="utilities">$0</span>
-              </div>
-              <div class="chart-bar-row">
-                <span class="bar-label">Entertainment</span>
-                <div class="bar-track">
-                  <div class="bar-fill accent" data-category="entertainment" style="--bar-width: 0%"></div>
-                </div>
-                <span class="bar-value" data-category="entertainment">$0</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Summary cards -->
-          <div class="trends-summary">
-            <div class="summary-card total-card">
-              <span class="summary-label">Total Spent</span>
-              <strong class="summary-value" id="totalSpent">$0</strong>
-              <span class="summary-change" id="totalChange"></span>
-            </div>
-            <div class="summary-card">
-              <span class="summary-label">Biggest Category</span>
-              <strong class="summary-value" id="biggestCategory">—</strong>
-              <span class="summary-detail" id="biggestAmount">$0</span>
-            </div>
-            <div class="summary-card">
-              <span class="summary-label">Most Improved</span>
-              <strong class="summary-value" id="mostImproved">—</strong>
-              <span class="summary-change positive" id="improvedAmount"></span>
-            </div>
-            <div class="summary-card insight-card">
-              <span class="summary-label">Insight</span>
-              <p class="summary-insight" id="monthInsight">Select a month to see insights.</p>
-            </div>
-          </div>
+        <div class="dashboard-card">
+          <img src="dashboard-5.png" alt="Dashboard screenshot 5">
         </div>
-
+        <div class="dashboard-card">
+          <img src="dashboard-8.png" alt="Dashboard screenshot 8">
+        </div>
+        <div class="dashboard-card">
+          <img src="dashboard-7.png" alt="Dashboard screenshot 7">
+        </div>
       </div>
     </div>
   </section>
