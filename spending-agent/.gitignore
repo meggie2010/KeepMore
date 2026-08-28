@@ -1,0 +1,7 @@
+# Your real financial data and account config never get committed.
+accounts.yaml
+data/
+reports/
+__pycache__/
+*.pyc
+.venv/

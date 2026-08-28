@@ -1,0 +1,41 @@
+# Copy this file to accounts.yaml and edit it for your real accounts.
+# accounts.yaml is gitignored — it may reference your bank's export
+# filenames, but never holds credentials or transaction data itself.
+#
+# Each entry maps one account's raw CSV export to the common transaction
+# format. Set this up once; ingest.py re-reads it on every run.
+#
+# file_pattern matches files in data/raw/ (glob syntax, e.g. "chase*.csv").
+#
+# Two ways to specify amounts:
+#   1. amount_column + spent_is_positive
+#        - spent_is_positive: false  ->  negative amounts are money spent (typical checking export)
+#        - spent_is_positive: true   ->  positive amounts are money spent (typical credit card export)
+#   2. debit_column / credit_column
+#        - for exports with separate "Debit"/"Credit" (or "Withdrawal"/"Deposit") columns
+
+accounts:
+  checking:
+    type: checking                     # checking | credit
+    file_pattern: "checking*.csv"
+    date_column: "Date"
+    description_column: "Description"
+    amount_column: "Amount"
+    spent_is_positive: false
+
+  credit_card:
+    type: credit
+    file_pattern: "credit*.csv"
+    date_column: "Trans Date"
+    description_column: "Description"
+    amount_column: "Amount"
+    spent_is_positive: true
+
+  # Example of the debit/credit column style instead of a single amount column:
+  # savings:
+  #   type: checking
+  #   file_pattern: "savings*.csv"
+  #   date_column: "Posting Date"
+  #   description_column: "Description"
+  #   debit_column: "Debit"
+  #   credit_column: "Credit"
