@@ -12,6 +12,7 @@ hash of (account, date, description, amount).
 """
 
 import argparse
+import warnings
 from pathlib import Path
 
 import pandas as pd
@@ -70,7 +71,13 @@ def parse_amount(raw) -> float:
 
 
 def normalize_file(path: Path, account_key: str, cfg: dict) -> pd.DataFrame:
-    df = pd.read_csv(path, dtype=str, keep_default_na=False)
+    # index_col=False: some bank exports (e.g. Chase) have a stray trailing
+    # comma on every data row, one more field than the header has columns.
+    # Without this, pandas silently treats the first column as an unnamed
+    # row index and shifts every other column over by one.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", pd.errors.ParserWarning)
+        df = pd.read_csv(path, dtype=str, keep_default_na=False, index_col=False)
 
     for col in (cfg["date_column"], cfg["description_column"]):
         if col not in df.columns:
@@ -109,8 +116,9 @@ def normalize_file(path: Path, account_key: str, cfg: dict) -> pd.DataFrame:
     if skipped:
         print(f"  {path.name}: skipped {skipped} row(s) with missing/unparseable date, description, or amount")
 
+    out["occurrence"] = out.groupby(["date", "description", "amount"]).cumcount()
     out["id"] = [
-        make_transaction_id(r.account, r.date, r.description, r.amount) for r in out.itertuples()
+        make_transaction_id(r.account, r.date, r.description, r.amount, r.occurrence) for r in out.itertuples()
     ]
     return out[TRANSACTION_COLUMNS]
 
