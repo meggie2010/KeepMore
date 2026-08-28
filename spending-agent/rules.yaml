@@ -40,11 +40,14 @@ categories:
       - comcast
       - xfinity
       - spectrum
-      - "at&t"
       - att* bill payment
+      - att payment
       - verizon
       - t-mobile
       - mtg pymts
+      - jpmorgan chase
+      - jp hmltn utlpayment
+      - tennessee-americ
 
   - id: insurance
     name: Insurance
@@ -252,6 +255,13 @@ categories:
     group: guiltfree
     keywords: []
 
+  - id: savings
+    name: Savings
+    group: transfer
+    keywords:
+      - ally bank
+      - auto loan savings
+
   # --- Income ---
   - id: income
     name: Income
@@ -279,6 +289,11 @@ categories:
       - vanguard sell
       - "vgi 529"
       - zelle payment
+      # These cards are paid off via ACH but not yet ingested itemized —
+      # excluded here to avoid double-counting once they're added; until
+      # then, spending on them isn't reflected in this report at all.
+      - american express ach
+      - bk of amer mc
 
 # Fallback when no keyword above matches — uses the bank's own category
 # (from accounts.yaml's category_column), if the account provides one.
