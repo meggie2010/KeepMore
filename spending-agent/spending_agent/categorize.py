@@ -21,7 +21,7 @@ import yaml
 from spending_agent.common import normalize_description
 
 REQUIRED_CATEGORY_KEYS = {"id", "name", "group"}
-VALID_GROUPS = {"fixed", "guiltfree", "income", "transfer"}
+VALID_GROUPS = {"fixed", "guiltfree", "income", "savings", "investments", "transfer"}
 
 
 class CategorizeError(Exception):

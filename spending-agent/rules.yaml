@@ -18,7 +18,9 @@ groups:
   fixed: Fixed Costs
   guiltfree: Guilt-Free Spending
   income: Income
-  transfer: Transfers (excluded)
+  savings: Savings
+  investments: Investments
+  transfer: Transfers (excluded — credit card payments, ATM withdrawals, etc.)
 
 categories:
   # --- Fixed Costs ---
@@ -286,14 +288,25 @@ categories:
       - paycheck
       - remote online deposit
 
-  # --- Transfers (excluded from spending and income) ---
+  # --- Savings (its own report line, not spending) ---
   - id: savings
     name: Savings
-    group: transfer
+    group: savings
     keywords:
       - ally bank
       - auto loan savings
 
+  # --- Investments (its own report line, not spending) ---
+  - id: investments
+    name: Investments
+    group: investments
+    keywords:
+      - vanguard buy
+      - vanguard sell
+      - "vgi 529"
+
+  # --- Transfers (fully excluded — not shown anywhere in the report;
+  # money moving to pay off a card whose purchases aren't itemized here) ---
   - id: transfer
     name: Transfers & Payments
     group: transfer
@@ -305,9 +318,6 @@ categories:
       - transfer to
       - transfer from
       - atm withdrawal
-      - vanguard buy
-      - vanguard sell
-      - "vgi 529"
       - zelle payment
       # These cards are paid off via ACH but not yet ingested itemized —
       # excluded here to avoid double-counting once they're added; until
