@@ -98,6 +98,12 @@ def normalize_file(path: Path, account_key: str, cfg: dict) -> pd.DataFrame:
         credit = df[cfg["credit_column"]].map(parse_amount).fillna(0).abs() if cfg.get("credit_column") else zeros
         amounts = credit - debit
 
+    category_col = cfg.get("category_column")
+    if category_col and category_col in df.columns:
+        source_category = df[category_col].str.strip()
+    else:
+        source_category = ""
+
     out = pd.DataFrame(
         {
             "date": dates.dt.strftime("%Y-%m-%d"),
@@ -106,6 +112,7 @@ def normalize_file(path: Path, account_key: str, cfg: dict) -> pd.DataFrame:
             "account": account_key,
             "account_type": cfg["type"],
             "source_file": path.name,
+            "source_category": source_category,
         }
     )
 
@@ -140,6 +147,9 @@ def ingest(input_dir: Path, config_path: Path, output_path: Path) -> pd.DataFram
 
     if output_path.exists():
         existing = pd.read_csv(output_path, dtype={"id": str})
+        for col in TRANSACTION_COLUMNS:
+            if col not in existing.columns:
+                existing[col] = ""
     else:
         existing = pd.DataFrame(columns=TRANSACTION_COLUMNS)
 

@@ -13,6 +13,7 @@ TRANSACTION_COLUMNS = [
     "account",
     "account_type",
     "source_file",
+    "source_category",
 ]
 
 _NON_ALNUM = re.compile(r"[^a-z0-9 ]")

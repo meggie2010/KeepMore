@@ -13,6 +13,11 @@
 #        - spent_is_positive: true   ->  positive amounts are money spent (typical credit card export)
 #   2. debit_column / credit_column
 #        - for exports with separate "Debit"/"Credit" (or "Withdrawal"/"Deposit") columns
+#
+# Optional: category_column — if your export already includes its own
+# category (e.g. Chase credit card exports have one), name it here. The
+# categorize stage uses it as a fallback for transactions that don't match
+# any keyword rule, instead of leaving them uncategorized.
 
 accounts:
   checking:
@@ -30,6 +35,7 @@ accounts:
     description_column: "Description"
     amount_column: "Amount"
     spent_is_positive: true
+    category_column: "Category"        # optional; omit if your export doesn't have one
 
   # Example of the debit/credit column style instead of a single amount column:
   # savings:

@@ -1,0 +1,289 @@
+# Editable categorization rules. Each category has a keyword list — a
+# transaction is matched to the first category whose keyword appears
+# (case-insensitive, substring match) in its description. Order matters:
+# put more specific categories above more general ones.
+#
+# If nothing matches, `source_category_fallback` maps your bank's own
+# category (captured from accounts.yaml's `category_column`, if set) to one
+# of these categories. If that doesn't match either, it falls to `other`.
+#
+# `group` is one of: fixed | guiltfree | income | transfer
+#   - fixed / guiltfree feed the Fixed Costs vs. Guilt-Free Spending split
+#   - income feeds the savings-rate calculation
+#   - transfer is excluded entirely (credit card payments, investment
+#     buys/sells, savings contributions — money moving between your own
+#     accounts, not being earned or spent)
+
+groups:
+  fixed: Fixed Costs
+  guiltfree: Guilt-Free Spending
+  income: Income
+  transfer: Transfers (excluded)
+
+categories:
+  # --- Fixed Costs ---
+  - id: housing
+    name: Housing
+    group: fixed
+    keywords: [rent, mortgage, "hoa "]
+
+  - id: utilities
+    name: Utilities
+    group: fixed
+    keywords:
+      - epb electric
+      - epb fiber
+      - republic services trash
+      - waldens ridge utility
+      - water bill
+      - sewer
+      - comcast
+      - xfinity
+      - spectrum
+      - "at&t"
+      - att* bill payment
+      - verizon
+      - t-mobile
+
+  - id: insurance
+    name: Insurance
+    group: fixed
+    keywords:
+      - state farm
+      - geico
+      - progressive
+      - allstate
+      - liberty mutual
+      - usaa
+      - goosehead insurance
+
+  - id: subscriptions
+    name: Subscriptions
+    group: fixed
+    keywords:
+      - netflix
+      - spotify
+      - hulu
+      - disney+
+      - amazon prime
+      - icloud
+      - audible
+      - youtube tv
+      - claude.ai
+      - genspark.ai
+      - intuit *turbotax
+      - adt security
+      - annual membership fee
+
+  - id: debt
+    name: Debt Payments
+    group: fixed
+    keywords: [student loan, navient, sallie mae, loan pymt, loan payment]
+
+  # --- Guilt-Free Spending ---
+  - id: groceries
+    name: Groceries
+    group: guiltfree
+    keywords:
+      - thrive market
+      - "pruett's"
+      - safeway
+      - kroger
+      - trader joe
+      - whole foods
+      - aldi
+      - publix
+      - costco
+      - sprouts
+      - wegmans
+      - wal-mart #
+
+  - id: dining
+    name: Dining
+    group: guiltfree
+    keywords:
+      - restaurant
+      - starbucks
+      - doordash
+      - uber eats
+      - grubhub
+      - chipotle
+      - mcdonald
+      - "tst*"
+      - jersey mikes
+      - river street deli
+      - coffee
+      - "cafe "
+      - pizza
+
+  - id: home_projects
+    name: Home & Garden
+    group: guiltfree
+    keywords:
+      - home depot
+      - homedepot.com
+      - lowes #
+      - elders ace
+      - elders hdwe
+      - tractor supply
+      - filterbuy
+      - selectblinds
+      - lumberjacks
+      - malone heat
+      - action air
+      - ge appliances
+      - husqvarna
+      - blueair
+      - at home store
+      - ashley homestore
+      - good guys moving
+      - movinghelp.com
+      - same day septic
+      - harbor freight
+
+  - id: shopping
+    name: Shopping
+    group: guiltfree
+    keywords:
+      - amazon
+      - target
+      - walmart.com
+      - best buy
+      - ebay
+      - etsy
+      - dollar general
+      - marshalls
+      - chewy.com
+      - shutterfly
+      - bass pro
+      - hobby lobby
+      - woodcraft
+
+  - id: auto
+    name: Auto & Transport
+    group: guiltfree
+    keywords:
+      - exxon
+      - shell oil
+      - "love's #"
+      - circle k
+      - autozone
+      - modwash
+      - "take 5"
+      - carta parkmobile
+      - carta coolidge
+      - "mta*nyct"
+      - omega parking
+      - "parking*"
+
+  - id: travel
+    name: Travel
+    group: guiltfree
+    keywords:
+      - airbnb
+      - delta
+      - southwest air
+      - marriott
+      - hilton
+      - expedia
+
+  - id: entertainment
+    name: Entertainment
+    group: guiltfree
+    keywords:
+      - amc theatres
+      - ticketmaster
+      - golf sim
+      - moccasin bend golf
+      - memorial and muse
+      - cataloochee ski
+
+  - id: health
+    name: Health & Fitness
+    group: guiltfree
+    keywords:
+      - walgreens
+      - cvs
+      - pharmacy
+      - gym
+      - planet fitness
+      - peloton
+      - dental
+      - ag1 usa
+      - athleticgreens
+
+  - id: personal
+    name: Personal Care
+    group: guiltfree
+    keywords:
+      - salon
+      - spa
+      - barber
+      - "sq *chelsia"
+      - apecwater
+      - joliewater
+      - jolieskinco
+
+  - id: pets
+    name: Pets
+    group: guiltfree
+    keywords: [chewy, animal hospit, vet]
+
+  - id: professional_services
+    name: Professional Services
+    group: guiltfree
+    keywords:
+      - trust & will
+      - eclipse appraisal
+      - city home inspector
+      - adt mobility
+
+  - id: other
+    name: Other
+    group: guiltfree
+    keywords: []
+
+  # --- Income ---
+  - id: income
+    name: Income
+    group: income
+    keywords:
+      - payroll
+      - direct dep
+      - salary
+      - paycheck
+      - remote online deposit
+
+  # --- Transfers (excluded from spending and income) ---
+  - id: transfer
+    name: Transfers & Payments
+    group: transfer
+    keywords:
+      - chase credit crd autopay
+      - chase credit card autopay
+      - automatic payment - thank
+      - online payment thank you
+      - transfer to
+      - transfer from
+      - atm withdrawal
+      - vanguard buy
+      - vanguard sell
+      - "vgi 529"
+      - zelle payment
+
+# Fallback when no keyword above matches — uses the bank's own category
+# (from accounts.yaml's category_column), if the account provides one.
+source_category_fallback:
+  "Bills & Utilities": utilities
+  "Home": home_projects
+  "Shopping": shopping
+  "Groceries": groceries
+  "Automotive": auto
+  "Gas": auto
+  "Travel": travel
+  "Entertainment": entertainment
+  "Health & Wellness": health
+  "Personal": personal
+  "Professional Services": professional_services
+  "Food & Drink": dining
+  "Fees & Adjustments": subscriptions
