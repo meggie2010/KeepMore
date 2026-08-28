@@ -44,6 +44,7 @@ categories:
       - att* bill payment
       - verizon
       - t-mobile
+      - mtg pymts
 
   - id: insurance
     name: Insurance
@@ -140,6 +141,14 @@ categories:
       - movinghelp.com
       - same day septic
       - harbor freight
+      # one-time home purchase / closing costs
+      - bridge city title
+      - goldman sachs
+      - beacon electrica
+      - earnnest
+      - "check 137"
+      - "check 107"
+      - "check 127"
 
   - id: shopping
     name: Shopping
