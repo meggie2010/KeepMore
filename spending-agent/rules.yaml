@@ -54,6 +54,8 @@ categories:
       - liberty mutual
       - usaa
       - goosehead insurance
+      - pac-life
+      - ins prem
       # recurring streaming subscriptions
       - netflix
       - spotify
@@ -128,6 +130,7 @@ categories:
       - intuit *turbotax
       - icloud
       - audible
+      - rocket money
 
   - id: pets
     name: Pets
@@ -311,6 +314,7 @@ categories:
       # then, spending on them isn't reflected in this report at all.
       - american express ach
       - bk of amer mc
+      - bank of america payment
 
 # Fallback when no keyword above matches — uses the bank's own category
 # (from accounts.yaml's category_column), if the account provides one.
