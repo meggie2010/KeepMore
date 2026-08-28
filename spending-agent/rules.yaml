@@ -22,15 +22,11 @@ groups:
 
 categories:
   # --- Fixed Costs ---
-  - id: housing
-    name: Housing
-    group: fixed
-    keywords: [rent, mortgage, "hoa "]
-
-  - id: utilities
-    name: Utilities
+  - id: bills_utilities
+    name: Bills & Utilities
     group: fixed
     keywords:
+      # utilities
       - epb electric
       - epb fiber
       - republic services trash
@@ -44,15 +40,13 @@ categories:
       - att payment
       - verizon
       - t-mobile
-      - mtg pymts
-      - jpmorgan chase
       - jp hmltn utlpayment
       - tennessee-americ
-
-  - id: insurance
-    name: Insurance
-    group: fixed
-    keywords:
+      # mortgages
+      - mtg pymts
+      - jpmorgan chase
+      - crosscountry mortgage
+      # insurance
       - state farm
       - geico
       - progressive
@@ -60,34 +54,48 @@ categories:
       - liberty mutual
       - usaa
       - goosehead insurance
-
-  - id: subscriptions
-    name: Subscriptions
-    group: fixed
-    keywords:
+      # recurring streaming subscriptions
       - netflix
       - spotify
       - hulu
       - disney+
-      - amazon prime
-      - icloud
-      - audible
       - youtube tv
-      - claude.ai
-      - genspark.ai
-      - intuit *turbotax
+      # security / monitoring
       - adt security
-      - annual membership fee
+      - adt mobility
+      # debt payments
+      - student loan
+      - navient
+      - sallie mae
+      - loan pymt
+      - loan payment
 
-  - id: debt
-    name: Debt Payments
+  - id: auto
+    name: Auto & Transport
     group: fixed
-    keywords: [student loan, navient, sallie mae, loan pymt, loan payment]
+    keywords:
+      - exxon
+      - shell oil
+      - "love's #"
+      - circle k
+      - autozone
+      - modwash
+      - "take 5"
+      - carta parkmobile
+      - carta coolidge
+      - "mta*nyct"
+      - omega parking
+      - "parking*"
 
-  # --- Guilt-Free Spending ---
+  - id: nutrition_world
+    name: Nutrition World
+    group: fixed
+    keywords:
+      - nutrition world
+
   - id: groceries
     name: Groceries
-    group: guiltfree
+    group: fixed
     keywords:
       - thrive market
       - "pruett's"
@@ -102,8 +110,38 @@ categories:
       - wegmans
       - wal-mart #
 
+  - id: medical
+    name: Medical
+    group: fixed
+    keywords:
+      - walgreens
+      - cvs
+      - pharmacy
+      - dental
+
+  - id: software
+    name: Software
+    group: fixed
+    keywords:
+      - claude.ai
+      - genspark.ai
+      - intuit *turbotax
+      - icloud
+      - audible
+
+  - id: pets
+    name: Pets
+    group: fixed
+    keywords: [chewy, animal hospit, vet]
+
+  - id: other
+    name: Uncategorized
+    group: fixed
+    keywords: []
+
+  # --- Guilt-Free Spending ---
   - id: dining
-    name: Dining
+    name: Dining and Drinks
     group: guiltfree
     keywords:
       - restaurant
@@ -119,6 +157,18 @@ categories:
       - coffee
       - "cafe "
       - pizza
+
+  - id: personal
+    name: Personal Care
+    group: guiltfree
+    keywords:
+      - salon
+      - spa
+      - barber
+      - "sq *chelsia"
+      - apecwater
+      - joliewater
+      - jolieskinco
 
   - id: home_projects
     name: Home & Garden
@@ -152,6 +202,10 @@ categories:
       - "check 137"
       - "check 107"
       - "check 127"
+      # professional services (home-related)
+      - trust & will
+      - eclipse appraisal
+      - city home inspector
 
   - id: shopping
     name: Shopping
@@ -165,42 +219,33 @@ categories:
       - etsy
       - dollar general
       - marshalls
-      - chewy.com
       - shutterfly
       - bass pro
       - hobby lobby
       - woodcraft
 
-  - id: auto
-    name: Auto & Transport
+  - id: health_wellness
+    name: Health & Wellness
     group: guiltfree
     keywords:
-      - exxon
-      - shell oil
-      - "love's #"
-      - circle k
-      - autozone
-      - modwash
-      - "take 5"
-      - carta parkmobile
-      - carta coolidge
-      - "mta*nyct"
-      - omega parking
-      - "parking*"
+      - gym
+      - planet fitness
+      - peloton
+      - ag1 usa
+      - athleticgreens
 
-  - id: travel
-    name: Travel
+  - id: family_care
+    name: Family Care
     group: guiltfree
-    keywords:
-      - airbnb
-      - delta
-      - southwest air
-      - marriott
-      - hilton
-      - expedia
+    keywords: []
 
-  - id: entertainment
-    name: Entertainment
+  - id: gifts
+    name: Gifts
+    group: guiltfree
+    keywords: []
+
+  - id: entertainment_rec
+    name: Entertainment & Rec
     group: guiltfree
     keywords:
       - amc theatres
@@ -210,57 +255,22 @@ categories:
       - memorial and muse
       - cataloochee ski
 
-  - id: health
-    name: Health & Fitness
+  - id: travel_vacation
+    name: Travel & Vacation
     group: guiltfree
     keywords:
-      - walgreens
-      - cvs
-      - pharmacy
-      - gym
-      - planet fitness
-      - peloton
-      - dental
-      - ag1 usa
-      - athleticgreens
+      - airbnb
+      - delta
+      - southwest air
+      - marriott
+      - hilton
+      - expedia
 
-  - id: personal
-    name: Personal Care
+  - id: fees
+    name: Fees
     group: guiltfree
     keywords:
-      - salon
-      - spa
-      - barber
-      - "sq *chelsia"
-      - apecwater
-      - joliewater
-      - jolieskinco
-
-  - id: pets
-    name: Pets
-    group: guiltfree
-    keywords: [chewy, animal hospit, vet]
-
-  - id: professional_services
-    name: Professional Services
-    group: guiltfree
-    keywords:
-      - trust & will
-      - eclipse appraisal
-      - city home inspector
-      - adt mobility
-
-  - id: other
-    name: Other
-    group: guiltfree
-    keywords: []
-
-  - id: savings
-    name: Savings
-    group: transfer
-    keywords:
-      - ally bank
-      - auto loan savings
+      - annual membership fee
 
   # --- Income ---
   - id: income
@@ -274,6 +284,13 @@ categories:
       - remote online deposit
 
   # --- Transfers (excluded from spending and income) ---
+  - id: savings
+    name: Savings
+    group: transfer
+    keywords:
+      - ally bank
+      - auto loan savings
+
   - id: transfer
     name: Transfers & Payments
     group: transfer
@@ -298,16 +315,16 @@ categories:
 # Fallback when no keyword above matches — uses the bank's own category
 # (from accounts.yaml's category_column), if the account provides one.
 source_category_fallback:
-  "Bills & Utilities": utilities
+  "Bills & Utilities": bills_utilities
   "Home": home_projects
   "Shopping": shopping
   "Groceries": groceries
   "Automotive": auto
   "Gas": auto
-  "Travel": travel
-  "Entertainment": entertainment
-  "Health & Wellness": health
+  "Travel": travel_vacation
+  "Entertainment": entertainment_rec
+  "Health & Wellness": health_wellness
   "Personal": personal
-  "Professional Services": professional_services
+  "Professional Services": home_projects
   "Food & Drink": dining
-  "Fees & Adjustments": subscriptions
+  "Fees & Adjustments": fees
