@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeepMore — Personal Spending Agent</title>
+  <meta name="description" content="Upload checking and credit card transactions, auto-categorize spending, and get a monthly dashboard with your savings rate.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">Keep<span>More</span></div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn" data-view="dashboard">Dashboard</button>
+      <button class="tab-btn" data-view="import">Import</button>
+      <button class="tab-btn" data-view="transactions">Transactions</button>
+      <button class="tab-btn" data-view="categories">Categories</button>
+    </nav>
+  </header>
+
+  <main id="view-root"></main>
+
+  <p class="privacy-note">All data stays in this browser (localStorage) — nothing is uploaded anywhere.</p>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
