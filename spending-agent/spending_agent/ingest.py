@@ -150,7 +150,7 @@ def ingest(input_dir: Path, config_path: Path, output_path: Path) -> pd.DataFram
     new_df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=TRANSACTION_COLUMNS)
 
     if output_path.exists():
-        existing = pd.read_csv(output_path, dtype={"id": str})
+        existing = pd.read_csv(output_path, dtype={"id": str}, encoding="utf-8")
         for col in TRANSACTION_COLUMNS:
             if col not in existing.columns:
                 existing[col] = ""
@@ -165,7 +165,7 @@ def ingest(input_dir: Path, config_path: Path, output_path: Path) -> pd.DataFram
     duplicate_count = len(new_df) - new_count
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    combined.to_csv(output_path, index=False)
+    combined.to_csv(output_path, index=False, encoding="utf-8")
 
     print(
         f"\nParsed {len(new_df)} row(s) from {len(frames)} file(s). "

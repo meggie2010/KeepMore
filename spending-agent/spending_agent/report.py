@@ -385,7 +385,7 @@ def main():
     if not args.input.exists():
         raise SystemExit(f"Error: {args.input} not found. Run categorize first: python -m spending_agent.categorize")
 
-    df = pd.read_csv(args.input, dtype={"id": str}, keep_default_na=False)
+    df = pd.read_csv(args.input, dtype={"id": str}, keep_default_na=False, encoding="utf-8")
     df["amount"] = pd.to_numeric(df["amount"])
     all_months = list_months(df)
     if not all_months:
@@ -401,7 +401,7 @@ def main():
             continue
         html = render_report(df, key, all_months, config)
         out_path = args.output_dir / f"{key}_report.html"
-        out_path.write_text(html)
+        out_path.write_text(html, encoding="utf-8")
         s = compute_summary(df, key, config)
         print(
             f"{key}: Take Home {fmt_money(s['take_home_pay'])} | Fixed {fmt_money(s['fixed'])} | "

@@ -132,11 +132,11 @@ def main():
     except CategorizeError as e:
         raise SystemExit(f"Error: {e}")
 
-    transactions = pd.read_csv(args.input, dtype={"id": str}, keep_default_na=False)
+    transactions = pd.read_csv(args.input, dtype={"id": str}, keep_default_na=False, encoding="utf-8")
     categorized = categorize_all(transactions, rules)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    categorized.to_csv(args.output, index=False)
+    categorized.to_csv(args.output, index=False, encoding="utf-8")
     print(f"Categorized {len(categorized)} transactions -> {args.output}")
 
     print_summary(categorized, rules)

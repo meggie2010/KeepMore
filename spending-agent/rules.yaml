@@ -20,7 +20,7 @@ groups:
   income: Income
   savings: Savings
   investments: Investments
-  transfer: Transfers (excluded — credit card payments, ATM withdrawals, etc.)
+  transfer: "Transfers (excluded - credit card payments, ATM withdrawals, etc.)"
 
 categories:
   # --- Fixed Costs ---
