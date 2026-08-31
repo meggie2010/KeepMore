@@ -1,0 +1,15 @@
+# Copy this file to report_config.yaml and edit it. Gitignored — it's your
+# personal payroll figures, not something to commit.
+#
+# Money that never touches your checking/credit accounts (pre-tax payroll
+# deductions like 401k and HSA) can't be detected from bank CSVs — there's
+# no transaction for it. List it here and the report adds it on top of the
+# transaction-derived Investments total, and adds it back into Total Take
+# Home Pay too (since it's real income, just redirected before you see it).
+#
+# Leave monthly_additions empty ({}) if this doesn't apply to you.
+
+monthly_additions:
+  investments:
+    "401k": 1172.00
+    "HSA": 671.00

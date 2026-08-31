@@ -12,6 +12,7 @@ hash of (account, date, description, amount).
 """
 
 import argparse
+import html
 import warnings
 from pathlib import Path
 
@@ -84,7 +85,10 @@ def normalize_file(path: Path, account_key: str, cfg: dict) -> pd.DataFrame:
             raise IngestError(f"{path.name}: expected column '{col}' not found. Columns present: {list(df.columns)}")
 
     dates = pd.to_datetime(df[cfg["date_column"]], errors="coerce")
-    descriptions = df[cfg["description_column"]].str.strip()
+    # Some bank exports (e.g. Chase) leave merchant names HTML-escaped
+    # ("&amp;" instead of "&") — clean that up here so keyword matching and
+    # the report both see the real text.
+    descriptions = df[cfg["description_column"]].str.strip().map(html.unescape)
 
     if "amount_column" in cfg:
         if cfg["amount_column"] not in df.columns:
