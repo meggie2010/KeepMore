@@ -294,8 +294,12 @@ categories:
     group: investments
     keywords:
       - vanguard buy
-      - vanguard sell
       - "vgi 529"
+      # note: "vanguard sell" isn't listed here — the one sell in the data
+      # (4/15/2026, $12,807.58) was part of the home purchase and is
+      # excluded below with the rest of that cluster. If you have a
+      # genuinely unrelated Vanguard sell in the future, add "vanguard
+      # sell" back here (or a more specific keyword for it).
 
   # --- Transfers (fully excluded — not shown anywhere in the report;
   # money moving to pay off a card whose purchases aren't itemized here) ---
@@ -324,6 +328,7 @@ categories:
       - goldman sachs
       - beacon electrica
       - earnnest
+      - vanguard sell
       - "check 137"
       - "check 107"
       - "check 127"
