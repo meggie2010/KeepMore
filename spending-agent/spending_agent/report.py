@@ -54,9 +54,25 @@ def load_report_config(path: Path) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def monthly_additions_total(config: dict, key: str = "investments") -> float:
-    additions = (config.get("monthly_additions") or {}).get(key) or {}
-    return float(sum(additions.values()))
+def monthly_additions_total(config: dict, key: str = "investments", month: str = None) -> float:
+    """Sums a monthly_additions entry. Two supported shapes:
+      - a flat dict {label: amount} - always applied, every month (e.g. 401k/HSA)
+      - a list of {label, amount, start_month?} - applied only from start_month
+        onward, for things that didn't exist for your whole history (e.g. a
+        rental property you started renting out partway through)
+    """
+    additions = (config.get("monthly_additions") or {}).get(key)
+    if not additions:
+        return 0.0
+    if isinstance(additions, dict):
+        return float(sum(additions.values()))
+    total = 0.0
+    for entry in additions:
+        start = entry.get("start_month")
+        if start and month and month < start:
+            continue
+        total += float(entry.get("amount", 0))
+    return total
 
 
 def month_key(date_str: str) -> str:
@@ -89,9 +105,10 @@ def compute_summary(df: pd.DataFrame, key: str, config: dict) -> dict:
     savings = -_signed_group_sum(in_month, "savings")
     investments_txn = -_signed_group_sum(in_month, "investments")
 
-    manual_investments = monthly_additions_total(config, "investments")
+    manual_investments = monthly_additions_total(config, "investments", key)
+    manual_income = monthly_additions_total(config, "income", key)
     investments = investments_txn + manual_investments
-    take_home_pay = income_txn + manual_investments
+    take_home_pay = income_txn + manual_investments + manual_income
 
     allocated = fixed + investments + savings + guiltfree
     unallocated = take_home_pay - allocated
@@ -105,6 +122,7 @@ def compute_summary(df: pd.DataFrame, key: str, config: dict) -> dict:
         "investments": investments,
         "investments_txn": investments_txn,
         "manual_investments": manual_investments,
+        "manual_income": manual_income,
         "unallocated": unallocated,
         "wealth_building_rate": wealth_building_rate,
     }
