@@ -35,6 +35,12 @@ PALETTE = {
     "border": "rgba(11,11,11,0.10)",
     "good": "#006300",
     "bad": "#d03b3b",
+    "status_good": "#0ca30c",
+    "status_good_track": "#dcf3dc",
+    "status_warning": "#fab219",
+    "status_warning_track": "#fef0d1",
+    "status_critical": "#d03b3b",
+    "status_critical_track": "#fbdede",
 }
 
 GROUP_COLOR = {
@@ -42,6 +48,12 @@ GROUP_COLOR = {
     "investments": PALETTE["orange"],
     "savings": PALETTE["aqua"],
     "guiltfree": PALETTE["yellow"],
+}
+
+BUDGET_STATUS = {
+    "good": {"fill": PALETTE["status_good"], "track": PALETTE["status_good_track"], "label": "Under budget"},
+    "warning": {"fill": PALETTE["status_warning"], "track": PALETTE["status_warning_track"], "label": "Near limit (>=90%)"},
+    "critical": {"fill": PALETTE["status_critical"], "track": PALETTE["status_critical_track"], "label": "Over budget"},
 }
 
 
@@ -52,6 +64,15 @@ def load_report_config(path: Path) -> dict:
         return {}
     with open(path) as f:
         return yaml.safe_load(f) or {}
+
+
+def load_budget_config(path: Path) -> dict:
+    """Monthly budget by category id (see budget.example.yaml). Returns {} if not set up."""
+    if not path.exists():
+        return {}
+    with open(path) as f:
+        raw = yaml.safe_load(f) or {}
+    return {k: float(v) for k, v in (raw.get("monthly_budget") or {}).items()}
 
 
 def monthly_additions_total(config: dict, key: str = "investments", month: str = None) -> float:
@@ -137,11 +158,42 @@ def compute_summary(df: pd.DataFrame, key: str, config: dict) -> dict:
     }
 
 
-def category_breakdown(df: pd.DataFrame, key: str, group: str) -> list:
+def category_id_maps(df: pd.DataFrame) -> tuple:
+    """id -> name and id -> group, built from every category_id ever seen in the data."""
+    sub = df[["category_id", "category_name", "category_group"]].drop_duplicates("category_id")
+    return dict(zip(sub["category_id"], sub["category_name"])), dict(zip(sub["category_id"], sub["category_group"]))
+
+
+def category_actuals(df: pd.DataFrame, key: str, group: str) -> dict:
     in_month = df[(df["date"].astype(str).str.slice(0, 7) == key) & (df["category_group"] == group)]
-    totals = -in_month.groupby("category_name")["amount"].sum()
-    totals = totals[totals > 0].sort_values(ascending=False)
-    return list(totals.items())
+    totals = -in_month.groupby("category_id")["amount"].sum()
+    return totals[totals > 0].to_dict()
+
+
+def budget_status(actual: float, budget: float) -> str:
+    ratio = actual / budget if budget else 0
+    if ratio > 1.0:
+        return "critical"
+    if ratio >= 0.9:
+        return "warning"
+    return "good"
+
+
+def category_breakdown(df: pd.DataFrame, key: str, group: str, budget_map: dict, id_to_name: dict, id_to_group: dict) -> list:
+    """Actual spend per category, plus its budget target if one is set in budget.yaml.
+    Includes budgeted categories with zero spend this month so they still show as
+    'on budget'. Sorted by actual spend, budgeted-but-unspent categories last."""
+    actuals = category_actuals(df, key, group)
+    ids = set(actuals) | {cid for cid in budget_map if id_to_group.get(cid) == group}
+    rows = []
+    for cid in ids:
+        if cid not in id_to_name:
+            continue  # budget.yaml references a category id that's never appeared in the data
+        actual = actuals.get(cid, 0.0)
+        budget = budget_map.get(cid)
+        rows.append({"label": id_to_name[cid], "actual": actual, "budget": budget})
+    rows.sort(key=lambda r: (-r["actual"], -(r["budget"] or 0)))
+    return rows
 
 
 def top_merchants(df: pd.DataFrame, key: str, limit: int = 10) -> list:
@@ -197,34 +249,71 @@ def svg_split_bar(segments: list, width: int = 640, height: int = 56) -> str:
     return f'<div class="chart-wrap">{svg}<div class="chart-legend">{legend}</div></div>'
 
 
-def svg_horizontal_bar(data: list, width: int = 640, bar_height: int = 24, gap: int = 14, color: str = None) -> str:
-    """data: [(label, value), ...]"""
-    color = color or PALETTE["blue"]
-    if not data:
+def svg_budget_bars(rows: list, width: int = 640, bar_height: int = 22, gap: int = 16, default_color: str = None) -> str:
+    """rows: [{'label':, 'actual':, 'budget': float|None}, ...] - one bar per category.
+    Bars for a budgeted category are colored by status (under / near limit / over)
+    with a marker tick at the budget target; bars for a category with no budget set
+    fall back to a single neutral color, same as before budgets existed."""
+    default_color = default_color or PALETTE["blue"]
+    if not rows:
         return '<p class="chart-empty">No spending in this category.</p>'
-    max_val = max(v for _, v in data) or 1
+    max_val = max(max(r["actual"], r["budget"] or 0) for r in rows) or 1
     label_w = 170
-    plot_w = width - label_w - 70
-    height = len(data) * (bar_height + gap) + gap
+    plot_w = width - label_w - 130
+    height = len(rows) * (bar_height + gap) + gap
     parts = []
-    for i, (label, value) in enumerate(data):
+    statuses_used = set()
+    has_unbudgeted = False
+    for i, r in enumerate(rows):
         y = gap + i * (bar_height + gap)
-        bar_w = max((value / max_val) * plot_w, 2)
+        label, actual, budget = r["label"], r["actual"], r["budget"]
         parts.append(
             f'<text x="{label_w - 10}" y="{y + bar_height / 2 + 4}" text-anchor="end" '
             f'font-size="11" fill="{PALETTE["text_muted"]}">{esc(label)}</text>'
         )
-        parts.append(f'<rect x="{label_w}" y="{y}" width="{plot_w}" height="{bar_height}" rx="4" fill="{PALETTE["gridline"]}"/>')
+        if budget:
+            status = budget_status(actual, budget)
+            statuses_used.add(status)
+            track_color, fill_color = BUDGET_STATUS[status]["track"], BUDGET_STATUS[status]["fill"]
+            pct = (actual / budget) * 100
+            title = f"{esc(label)}: {fmt_money(actual)} of {fmt_money(budget)} budget ({pct:.0f}%)"
+        else:
+            has_unbudgeted = True
+            track_color, fill_color = PALETTE["gridline"], default_color
+            title = f"{esc(label)}: {fmt_money(actual)} (no budget set)"
+
+        fill_w = max((actual / max_val) * plot_w, 2 if actual > 0 else 0)
+        parts.append(f'<rect x="{label_w}" y="{y}" width="{plot_w}" height="{bar_height}" rx="4" fill="{track_color}"/>')
         parts.append(
-            f'<rect x="{label_w}" y="{y}" width="{bar_w:.1f}" height="{bar_height}" rx="4" fill="{color}">'
-            f"<title>{esc(label)}: {fmt_money(value)}</title></rect>"
+            f'<rect x="{label_w}" y="{y}" width="{fill_w:.1f}" height="{bar_height}" rx="4" fill="{fill_color}">'
+            f"<title>{title}</title></rect>"
         )
+
+        end_x = label_w + fill_w
+        if budget:
+            budget_x = label_w + min(budget / max_val, 1.0) * plot_w
+            parts.append(
+                f'<rect x="{budget_x - 1:.1f}" y="{y - 3}" width="2" height="{bar_height + 6}" '
+                f'fill="{PALETTE["text_secondary"]}"><title>Budget: {fmt_money(budget)}</title></rect>'
+            )
+            end_x = max(end_x, budget_x)
+            value_text = f"{fmt_money(actual)} / {fmt_money(budget)}"
+        else:
+            value_text = fmt_money(actual)
         parts.append(
-            f'<text x="{label_w + bar_w + 8:.1f}" y="{y + bar_height / 2 + 4}" '
-            f'font-size="12" font-weight="600" fill="{PALETTE["text_primary"]}">{fmt_money(value)}</text>'
+            f'<text x="{end_x + 8:.1f}" y="{y + bar_height / 2 + 4}" '
+            f'font-size="12" font-weight="600" fill="{PALETTE["text_primary"]}">{value_text}</text>'
         )
     svg = f'<svg viewBox="0 0 {width} {height}" width="100%" height="{height}" role="img">{"".join(parts)}</svg>'
-    return f'<div class="chart-wrap">{svg}</div>'
+
+    legend_items = [
+        f'<span class="legend-item"><i style="background:{BUDGET_STATUS[s]["fill"]}"></i>{BUDGET_STATUS[s]["label"]}</span>'
+        for s in ("good", "warning", "critical") if s in statuses_used
+    ]
+    if has_unbudgeted:
+        legend_items.append(f'<span class="legend-item"><i style="background:{default_color}"></i>No budget set</span>')
+    legend_html = f'<div class="chart-legend">{"".join(legend_items)}</div>' if legend_items else ""
+    return f'<div class="chart-wrap">{svg}{legend_html}</div>'
 
 
 def svg_trend_stacked_bars(months_data: list, width: int = 640, height: int = 260) -> str:
@@ -331,10 +420,11 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 """
 
 
-def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict) -> str:
+def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict, budget_map: dict) -> str:
     s = compute_summary(df, key, config)
-    fixed_cats = category_breakdown(df, key, "fixed")
-    guiltfree_cats = category_breakdown(df, key, "guiltfree")
+    id_to_name, id_to_group = category_id_maps(df)
+    fixed_cats = category_breakdown(df, key, "fixed", budget_map, id_to_name, id_to_group)
+    guiltfree_cats = category_breakdown(df, key, "guiltfree", budget_map, id_to_name, id_to_group)
     merchants = top_merchants(df, key)
 
     trend_months = last_n_months(all_months, 6)
@@ -390,8 +480,8 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict) ->
 <main>
   {kpis}
   <div class="card"><h2>Take-Home Pay Allocation</h2>{svg_split_bar(split_segments)}</div>
-  <div class="card"><h2>Fixed Costs by Category</h2>{svg_horizontal_bar(fixed_cats, color=GROUP_COLOR['fixed'])}</div>
-  <div class="card"><h2>Guilt-Free Spending by Category</h2>{svg_horizontal_bar(guiltfree_cats, color=GROUP_COLOR['guiltfree'])}</div>
+  <div class="card"><h2>Fixed Costs by Category</h2>{svg_budget_bars(fixed_cats, default_color=GROUP_COLOR['fixed'])}</div>
+  <div class="card"><h2>Guilt-Free Spending by Category</h2>{svg_budget_bars(guiltfree_cats, default_color=GROUP_COLOR['guiltfree'])}</div>
   <div class="card"><h2>Allocation - Last {len(trend_months)} Months</h2>{svg_trend_stacked_bars(trend_data)}</div>
   <div class="card"><h2>Wealth-Building Rate - Last {len(trend_months)} Months</h2>{svg_line_chart(rate_points)}</div>
   <div class="card"><h2>Top Guilt-Free Merchants</h2>{merchants_html}</div>
@@ -404,6 +494,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--input", type=Path, default=Path("data/categorized_transactions.csv"))
     parser.add_argument("--config", type=Path, default=Path("report_config.yaml"))
+    parser.add_argument("--budget", type=Path, default=Path("budget.yaml"), help="Monthly budget-by-category YAML")
     parser.add_argument("--output-dir", type=Path, default=Path("reports"))
     parser.add_argument("--month", type=str, default=None, help="YYYY-MM; defaults to the latest month present")
     parser.add_argument("--all", action="store_true", help="Generate a report for every month present")
@@ -419,6 +510,7 @@ def main():
         raise SystemExit("Error: no transactions found.")
 
     config = load_report_config(args.config)
+    budget_map = load_budget_config(args.budget)
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     targets = all_months if args.all else [args.month or all_months[-1]]
@@ -426,7 +518,7 @@ def main():
         if key not in all_months:
             print(f"Skipping {key}: no transactions in that month.")
             continue
-        html = render_report(df, key, all_months, config)
+        html = render_report(df, key, all_months, config, budget_map)
         out_path = args.output_dir / f"{key}_report.html"
         out_path.write_text(html, encoding="utf-8")
         s = compute_summary(df, key, config)

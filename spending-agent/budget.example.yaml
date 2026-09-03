@@ -1,0 +1,24 @@
+# Copy this file to budget.yaml and edit it. Gitignored - it's your personal
+# budget numbers, not something to commit.
+#
+# monthly_budget maps a category id (from rules.yaml's `categories:` list -
+# the `id:` field, not the display `name:`) to a monthly dollar amount.
+#
+# Any category you don't list here just has no budget - it renders with no
+# target line, same as before this feature existed. Any category you do list
+# gets a status color on the Fixed Costs / Guilt-Free Spending charts:
+#   green  = under 90% of budget
+#   amber  = 90-100% of budget
+#   red    = over budget
+#
+# See rules.yaml for the full list of category ids.
+
+monthly_budget:
+  bills_utilities: 2285.61
+  groceries: 1046.11
+  nutrition_world: 1107.88
+  medical: 200.00
+  shopping: 439.67
+  health_wellness: 219.84
+  dining: 164.88
+  travel_vacation: 219.84

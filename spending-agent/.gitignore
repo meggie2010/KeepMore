@@ -1,6 +1,7 @@
 # Your real financial data and account config never get committed.
 accounts.yaml
 report_config.yaml
+budget.yaml
 data/
 reports/
 __pycache__/
