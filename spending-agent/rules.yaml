@@ -94,6 +94,7 @@ categories:
       - "mta*nyct"
       - omega parking
       - "parking*"
+      - brightbase
 
   - id: nutrition_world
     name: Nutrition World
@@ -118,6 +119,7 @@ categories:
       - wegmans
       - wal-mart #
       - food lion
+      - food city
 
   - id: medical
     name: Medical
@@ -169,6 +171,10 @@ categories:
       - "cafe "
       - pizza
       - amex dining credit
+      - dunkin
+      - el metate
+      - anejo grill
+      - oh wow donuts
 
   - id: personal
     name: Personal Care
@@ -207,6 +213,7 @@ categories:
       - same day septic
       - harbor freight
       - furniture
+      - rugs.com
       # professional services (home-related)
       - trust & will
       - eclipse appraisal
@@ -221,6 +228,7 @@ categories:
       - walmart.com
       - best buy
       - bestbuy
+      - freepeople.com
       - ebay
       - etsy
       - dollar general
@@ -249,7 +257,8 @@ categories:
   - id: gifts
     name: Gifts
     group: guiltfree
-    keywords: []
+    keywords:
+      - the knot registry
 
   - id: entertainment_rec
     name: Entertainment & Rec
@@ -258,9 +267,10 @@ categories:
       - amc theatres
       - ticketmaster
       - golf sim
-      - moccasin bend golf
+      - moccasin bend
       - memorial and muse
       - cataloochee ski
+      - tennessee aquarium
 
   - id: travel_vacation
     name: Travel & Vacation
