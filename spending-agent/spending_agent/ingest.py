@@ -86,7 +86,7 @@ def normalize_file(path: Path, account_key: str, cfg: dict) -> pd.DataFrame:
 
     dates = pd.to_datetime(df[cfg["date_column"]], errors="coerce")
     # Some bank exports (e.g. Chase) leave merchant names HTML-escaped
-    # ("&amp;" instead of "&") — clean that up here so keyword matching and
+    # ("&amp;" instead of "&") - clean that up here so keyword matching and
     # the report both see the real text.
     descriptions = df[cfg["description_column"]].str.strip().map(html.unescape)
 
