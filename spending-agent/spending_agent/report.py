@@ -147,7 +147,7 @@ def category_breakdown(df: pd.DataFrame, key: str, group: str) -> list:
 def top_merchants(df: pd.DataFrame, key: str, limit: int = 10) -> list:
     in_month = df[
         (df["date"].astype(str).str.slice(0, 7) == key)
-        & (df["category_group"].isin(["fixed", "guiltfree"]))
+        & (df["category_group"] == "guiltfree")
         & (df["amount"] < 0)
     ]
     g = in_month.groupby(["description", "category_name"])["amount"].agg(total="sum", count="count")
@@ -394,7 +394,7 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict) ->
   <div class="card"><h2>Guilt-Free Spending by Category</h2>{svg_horizontal_bar(guiltfree_cats, color=GROUP_COLOR['guiltfree'])}</div>
   <div class="card"><h2>Allocation - Last {len(trend_months)} Months</h2>{svg_trend_stacked_bars(trend_data)}</div>
   <div class="card"><h2>Wealth-Building Rate - Last {len(trend_months)} Months</h2>{svg_line_chart(rate_points)}</div>
-  <div class="card"><h2>Top Merchants</h2>{merchants_html}</div>
+  <div class="card"><h2>Top Guilt-Free Merchants</h2>{merchants_html}</div>
 </main>
 <p class="note">Generated locally - this file lives on your machine only.</p>
 </body></html>"""
