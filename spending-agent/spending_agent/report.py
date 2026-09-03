@@ -170,6 +170,11 @@ def category_actuals(df: pd.DataFrame, key: str, group: str) -> dict:
     return totals[totals > 0].to_dict()
 
 
+def category_monthly_actual(df: pd.DataFrame, key: str, category_id: str) -> float:
+    in_month = df[(df["date"].astype(str).str.slice(0, 7) == key) & (df["category_id"] == category_id)]
+    return -in_month["amount"].sum()
+
+
 def budget_status(actual: float, budget: float) -> str:
     ratio = actual / budget if budget else 0
     if ratio > 1.0:
@@ -316,51 +321,48 @@ def svg_budget_bars(rows: list, width: int = 640, bar_height: int = 22, gap: int
     return f'<div class="chart-wrap">{svg}{legend_html}</div>'
 
 
-def svg_trend_stacked_bars(months_data: list, width: int = 640, height: int = 260) -> str:
-    """months_data: [{'label': str, 'fixed':.., 'investments':.., 'savings':.., 'guiltfree':..}, ...]"""
-    if not months_data:
+def svg_column_chart(points: list, width: int = 640, height: int = 200, color: str = None) -> str:
+    """points: [(label, value), ...] - single-series monthly columns. A single
+    series needs no legend box: the card title already names what's plotted."""
+    color = color or PALETTE["blue"]
+    if not points:
         return '<p class="chart-empty">Not enough monthly data yet.</p>'
-    order = ["fixed", "investments", "savings", "guiltfree"]
-    max_total = max(sum(max(m[k], 0) for k in order) for m in months_data) or 1
-    plot_h = height - 40
-    bar_w = 28
-    slot = width / len(months_data)
-    gap = 2
+    max_val = max(v for _, v in points) or 1
+    pad_top = 20
+    plot_h = height - 40 - pad_top
+    bar_w = min(40, width / len(points) * 0.5)
+    slot = width / len(points)
     parts = []
-    for i, m in enumerate(months_data):
+    for i, (label, value) in enumerate(points):
         cx = i * slot + slot / 2
         x = cx - bar_w / 2
-        y_cursor = plot_h
-        for k in order:
-            v = max(m[k], 0)
-            h = (v / max_total) * plot_h
-            y = y_cursor - h
-            parts.append(
-                f'<rect x="{x:.1f}" y="{max(y,0):.1f}" width="{bar_w}" height="{max(h - gap, 0):.1f}" '
-                f'rx="4" fill="{GROUP_COLOR[k]}"><title>{m["label"]} {k}: {fmt_money(m[k])}</title></rect>'
-            )
-            y_cursor -= h
+        h = (max(value, 0) / max_val) * plot_h
+        y = pad_top + (plot_h - h)
+        parts.append(
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w:.1f}" height="{h:.1f}" rx="4" fill="{color}">'
+            f"<title>{esc(label)}: {fmt_money(value)}</title></rect>"
+        )
+        parts.append(
+            f'<text x="{cx:.1f}" y="{y - 6:.1f}" text-anchor="middle" font-size="11" '
+            f'font-weight="600" fill="{PALETTE["text_primary"]}">{fmt_money(value)}</text>'
+        )
         parts.append(
             f'<text x="{cx:.1f}" y="{height - 8}" text-anchor="middle" font-size="11" '
-            f'fill="{PALETTE["text_muted"]}">{esc(m["label"])}</text>'
+            f'fill="{PALETTE["text_muted"]}">{esc(label)}</text>'
         )
     svg = f'<svg viewBox="0 0 {width} {height}" width="100%" height="{height}" role="img">{"".join(parts)}</svg>'
-    labels = {"fixed": "Fixed Costs", "investments": "Investments", "savings": "Savings", "guiltfree": "Guilt-Free Spending"}
-    legend = "".join(
-        f'<span class="legend-item"><i style="background:{GROUP_COLOR[k]}"></i>{labels[k]}</span>' for k in order
-    )
-    return f'<div class="chart-wrap">{svg}<div class="chart-legend">{legend}</div></div>'
+    return f'<div class="chart-wrap">{svg}</div>'
 
 
-def svg_line_chart(points: list, width: int = 640, height: int = 200) -> str:
-    """points: [(label, value_pct_or_none), ...]"""
+def svg_line_chart(points: list, width: int = 640, height: int = 200, target: float = None) -> str:
+    """points: [(label, value_pct_or_none), ...]. target: optional goal line (e.g. 20 for 20%)."""
     points = [p for p in points if p[1] is not None]
     if len(points) < 2:
         return '<p class="chart-empty">Need at least two months to show a trend.</p>'
     pad_l, pad_b, pad_t = 46, 26, 16
     plot_w = width - pad_l - 10
     plot_h = height - pad_b - pad_t
-    values = [v for _, v in points]
+    values = [v for _, v in points] + ([target] if target is not None else [])
     v_min = min(0, *values)
     v_max = max(values + [1])
     v_range = (v_max - v_min) or 1
@@ -373,6 +375,17 @@ def svg_line_chart(points: list, width: int = 640, height: int = 200) -> str:
 
     zero_y = y_at(0)
     parts = [f'<line x1="{pad_l}" x2="{width-10}" y1="{zero_y:.1f}" y2="{zero_y:.1f}" stroke="{PALETTE["baseline"]}" stroke-width="1"/>']
+    if target is not None:
+        target_y = y_at(target)
+        parts.append(
+            f'<line x1="{pad_l}" x2="{width-10}" y1="{target_y:.1f}" y2="{target_y:.1f}" '
+            f'stroke="{PALETTE["text_secondary"]}" stroke-width="1.5" stroke-dasharray="5 4">'
+            f"<title>Target: {target:.0f}%</title></line>"
+        )
+        parts.append(
+            f'<text x="{pad_l}" y="{target_y - 6:.1f}" font-size="11" '
+            f'fill="{PALETTE["text_secondary"]}">{target:.0f}% target</text>'
+        )
     path = " ".join(f'{"M" if i == 0 else "L"} {x_at(i):.1f} {y_at(v):.1f}' for i, (_, v) in enumerate(points))
     parts.append(f'<path d="{path}" fill="none" stroke="{PALETTE["blue"]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>')
     for i, (label, v) in enumerate(points):
@@ -428,12 +441,16 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict, bu
     merchants = top_merchants(df, key)
 
     trend_months = last_n_months(all_months, 6)
-    trend_data = []
     rate_points = []
+    guiltfree_points = []
+    shopping_points = []
+    dining_points = []
     for m in trend_months:
         ms = compute_summary(df, m, config)
-        trend_data.append({"label": month_label(m), "fixed": ms["fixed"], "investments": ms["investments"], "savings": ms["savings"], "guiltfree": ms["guiltfree"]})
         rate_points.append((month_label(m), ms["wealth_building_rate"]))
+        guiltfree_points.append((month_label(m), ms["guiltfree"]))
+        shopping_points.append((month_label(m), category_monthly_actual(df, m, "shopping")))
+        dining_points.append((month_label(m), category_monthly_actual(df, m, "dining")))
 
     unalloc_class = "good" if s["unallocated"] >= 0 else "bad"
     unalloc_note = "unallocated (still in checking)" if s["unallocated"] >= 0 else "over take-home pay this month"
@@ -482,8 +499,10 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict, bu
   <div class="card"><h2>Take-Home Pay Allocation</h2>{svg_split_bar(split_segments)}</div>
   <div class="card"><h2>Fixed Costs by Category</h2>{svg_budget_bars(fixed_cats, default_color=GROUP_COLOR['fixed'])}</div>
   <div class="card"><h2>Guilt-Free Spending by Category</h2>{svg_budget_bars(guiltfree_cats, default_color=GROUP_COLOR['guiltfree'])}</div>
-  <div class="card"><h2>Allocation - Last {len(trend_months)} Months</h2>{svg_trend_stacked_bars(trend_data)}</div>
-  <div class="card"><h2>Wealth-Building Rate - Last {len(trend_months)} Months</h2>{svg_line_chart(rate_points)}</div>
+  <div class="card"><h2>Guilt-Free Spending - Last {len(trend_months)} Months</h2>{svg_column_chart(guiltfree_points, color=GROUP_COLOR['guiltfree'])}</div>
+  <div class="card"><h2>Shopping - Last {len(trend_months)} Months</h2>{svg_column_chart(shopping_points, color=GROUP_COLOR['guiltfree'])}</div>
+  <div class="card"><h2>Dining - Last {len(trend_months)} Months</h2>{svg_column_chart(dining_points, color=GROUP_COLOR['guiltfree'])}</div>
+  <div class="card"><h2>Wealth-Building Rate - Last {len(trend_months)} Months</h2>{svg_line_chart(rate_points, target=20)}</div>
   <div class="card"><h2>Top Guilt-Free Merchants</h2>{merchants_html}</div>
 </main>
 <p class="note">Generated locally - this file lives on your machine only.</p>
