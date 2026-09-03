@@ -80,8 +80,12 @@ categories:
     keywords:
       - exxon
       - shell oil
+      - shell
+      - marathon
+      - mapco
       - "love's #"
       - circle k
+      - circlek
       - autozone
       - modwash
       - "take 5"
@@ -134,6 +138,7 @@ categories:
       - icloud
       - audible
       - rocket money
+      - apple.com/bill
 
   - id: pets
     name: Pets
@@ -320,6 +325,7 @@ categories:
       - transfer from
       - atm withdrawal
       - zelle payment
+      - online/mobile recurring
       # These cards are paid off via ACH but not yet ingested itemized -
       # excluded here to avoid double-counting once they're added; until
       # then, spending on them isn't reflected in this report at all.
