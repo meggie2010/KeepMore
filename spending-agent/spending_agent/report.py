@@ -112,7 +112,15 @@ def compute_summary(df: pd.DataFrame, key: str, config: dict) -> dict:
 
     allocated = fixed + investments + savings + guiltfree
     unallocated = take_home_pay - allocated
-    wealth_building_rate = (savings + investments) / take_home_pay * 100 if take_home_pay > 0 else None
+    # Net out overspend: if the month's total spend + savings + investing
+    # exceeded take-home pay (unallocated < 0), some of that Savings/
+    # Investments total wasn't new money - it was funded by drawing down
+    # cash already on hand. A positive unallocated (leftover cash not yet
+    # swept anywhere) also doesn't count as wealth-building until it's
+    # actually moved, so it's excluded either way - only a shortfall
+    # lowers the rate.
+    net_wealth_building = savings + investments + min(unallocated, 0)
+    wealth_building_rate = net_wealth_building / take_home_pay * 100 if take_home_pay > 0 else None
 
     return {
         "take_home_pay": take_home_pay,
@@ -124,6 +132,7 @@ def compute_summary(df: pd.DataFrame, key: str, config: dict) -> dict:
         "manual_investments": manual_investments,
         "manual_income": manual_income,
         "unallocated": unallocated,
+        "net_wealth_building": net_wealth_building,
         "wealth_building_rate": wealth_building_rate,
     }
 
@@ -346,7 +355,7 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict) ->
       <div class="stat-tile"><div class="label">Investments</div><div class="value">{fmt_money(s['investments'])}</div></div>
       <div class="stat-tile"><div class="label">Savings</div><div class="value">{fmt_money(s['savings'])}</div></div>
       <div class="stat-tile"><div class="label">Guilt-Free Spending</div><div class="value">{fmt_money(s['guiltfree'])}</div></div>
-      <div class="stat-tile"><div class="label">Wealth-Building Rate</div><div class="value">{f"{s['wealth_building_rate']:.1f}%" if s['wealth_building_rate'] is not None else "-"}</div><div class="sub">(Savings + Investments) / Take Home Pay</div></div>
+      <div class="stat-tile"><div class="label">Wealth-Building Rate</div><div class="value">{f"{s['wealth_building_rate']:.1f}%" if s['wealth_building_rate'] is not None else "-"}</div><div class="sub">Net Savings + Investments (after overspend) / Take Home Pay</div></div>
     </div>
     <p class="chart-empty"><span class="unalloc {unalloc_class}">{fmt_money(s['unallocated'])} {unalloc_note}</span></p>
     """
