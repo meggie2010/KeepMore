@@ -6,7 +6,7 @@ Usage:
     python -m spending_agent.report --all                # one report per month present
 
 Shows the 5-number Conscious Spending Plan view: Total Take Home Pay, Fixed
-Costs, Guilt-Free Spending, Savings, and Investments — plus category
+Costs, Guilt-Free Spending, Savings, and Investments - plus category
 breakdowns, a 6-month trend, and top merchants. Reads report_config.yaml (if
 present) to add pre-tax payroll deductions (401k, HSA, etc.) that never show
 up as bank transactions, on top of both Income and Investments.
@@ -143,7 +143,7 @@ def esc(s) -> str:
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-# ---------- SVG chart builders (no JS — <title> gives native hover tooltips) ----------
+# ---------- SVG chart builders (no JS - <title> gives native hover tooltips) ----------
 
 def svg_split_bar(segments: list, width: int = 640, height: int = 56) -> str:
     """segments: [(label, value, color), ...]"""
@@ -164,7 +164,7 @@ def svg_split_bar(segments: list, width: int = 640, height: int = 56) -> str:
         x += w + gap
     svg = f'<svg viewBox="0 0 {width} {height}" width="100%" height="{height}" role="img">{"".join(parts)}</svg>'
     legend = "".join(
-        f'<span class="legend-item"><i style="background:{color}"></i>{esc(label)} — {fmt_money(value)}</span>'
+        f'<span class="legend-item"><i style="background:{color}"></i>{esc(label)} - {fmt_money(value)}</span>'
         for label, value, color in segments
     )
     return f'<div class="chart-wrap">{svg}<div class="chart-legend">{legend}</div></div>'
@@ -328,7 +328,7 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict) ->
       <div class="stat-tile"><div class="label">Investments</div><div class="value">{fmt_money(s['investments'])}</div></div>
       <div class="stat-tile"><div class="label">Savings</div><div class="value">{fmt_money(s['savings'])}</div></div>
       <div class="stat-tile"><div class="label">Guilt-Free Spending</div><div class="value">{fmt_money(s['guiltfree'])}</div></div>
-      <div class="stat-tile"><div class="label">Wealth-Building Rate</div><div class="value">{f"{s['wealth_building_rate']:.1f}%" if s['wealth_building_rate'] is not None else "—"}</div><div class="sub">(Savings + Investments) / Take Home Pay</div></div>
+      <div class="stat-tile"><div class="label">Wealth-Building Rate</div><div class="value">{f"{s['wealth_building_rate']:.1f}%" if s['wealth_building_rate'] is not None else "-"}</div><div class="sub">(Savings + Investments) / Take Home Pay</div></div>
     </div>
     <p class="chart-empty"><span class="unalloc {unalloc_class}">{fmt_money(s['unallocated'])} {unalloc_note}</span></p>
     """
@@ -354,10 +354,10 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict) ->
     )
 
     return f"""<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><title>Spending Report — {month_label(key)}</title>{STYLE}</head>
+<html lang="en"><head><meta charset="UTF-8"><title>Spending Report - {month_label(key)}</title>{STYLE}</head>
 <body>
 <header>
-  <h1>Spending Report — {month_label(key)}</h1>
+  <h1>Spending Report - {month_label(key)}</h1>
   <p>Generated from {len(df)} categorized transactions. Other months: {month_options and '<select onchange="location.href=this.value+&quot;_report.html&quot;">' + month_options + '</select>'}</p>
 </header>
 <main>
@@ -365,11 +365,11 @@ def render_report(df: pd.DataFrame, key: str, all_months: list, config: dict) ->
   <div class="card"><h2>Take-Home Pay Allocation</h2>{svg_split_bar(split_segments)}</div>
   <div class="card"><h2>Fixed Costs by Category</h2>{svg_horizontal_bar(fixed_cats, color=GROUP_COLOR['fixed'])}</div>
   <div class="card"><h2>Guilt-Free Spending by Category</h2>{svg_horizontal_bar(guiltfree_cats, color=GROUP_COLOR['guiltfree'])}</div>
-  <div class="card"><h2>Allocation — Last {len(trend_months)} Months</h2>{svg_trend_stacked_bars(trend_data)}</div>
-  <div class="card"><h2>Wealth-Building Rate — Last {len(trend_months)} Months</h2>{svg_line_chart(rate_points)}</div>
+  <div class="card"><h2>Allocation - Last {len(trend_months)} Months</h2>{svg_trend_stacked_bars(trend_data)}</div>
+  <div class="card"><h2>Wealth-Building Rate - Last {len(trend_months)} Months</h2>{svg_line_chart(rate_points)}</div>
   <div class="card"><h2>Top Merchants</h2>{merchants_html}</div>
 </main>
-<p class="note">Generated locally — this file lives on your machine only.</p>
+<p class="note">Generated locally - this file lives on your machine only.</p>
 </body></html>"""
 
 
