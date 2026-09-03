@@ -347,6 +347,7 @@ categories:
       - american express ach
       - bk of amer mc
       - bank of america payment
+      - wf pl cc payment
       # one-time home purchase / closing costs - ignored entirely (not
       # shown as spending, savings, or investments), too large a one-time
       # event to be meaningful in a monthly report
