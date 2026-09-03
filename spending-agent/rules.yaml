@@ -113,6 +113,7 @@ categories:
       - sprouts
       - wegmans
       - wal-mart #
+      - food lion
 
   - id: medical
     name: Medical
@@ -137,7 +138,7 @@ categories:
   - id: pets
     name: Pets
     group: fixed
-    keywords: [chewy, animal hospit, vet]
+    keywords: [chewy, animal hospit, "east ridge animal", vet]
 
   - id: other
     name: Uncategorized
@@ -162,6 +163,7 @@ categories:
       - coffee
       - "cafe "
       - pizza
+      - amex dining credit
 
   - id: personal
     name: Personal Care
@@ -234,7 +236,8 @@ categories:
   - id: family_care
     name: Family Care
     group: guiltfree
-    keywords: []
+    keywords:
+      - serenity kids
 
   - id: gifts
     name: Gifts
@@ -268,6 +271,7 @@ categories:
     group: guiltfree
     keywords:
       - annual membership fee
+      - renewal membership fee
 
   # --- Income ---
   - id: income
@@ -310,6 +314,7 @@ categories:
       - chase credit crd autopay
       - chase credit card autopay
       - automatic payment - thank
+      - autopay payment
       - online payment thank you
       - transfer to
       - transfer from
