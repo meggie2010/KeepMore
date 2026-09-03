@@ -1,4 +1,4 @@
-# Editable categorization rules. Each category has a keyword list — a
+# Editable categorization rules. Each category has a keyword list - a
 # transaction is matched to the first category whose keyword appears
 # (case-insensitive, substring match) in its description. Order matters:
 # put more specific categories above more general ones.
@@ -11,7 +11,7 @@
 #   - fixed / guiltfree feed the Fixed Costs vs. Guilt-Free Spending split
 #   - income feeds the savings-rate calculation
 #   - transfer is excluded entirely (credit card payments, investment
-#     buys/sells, savings contributions — money moving between your own
+#     buys/sells, savings contributions - money moving between your own
 #     accounts, not being earned or spent)
 
 groups:
@@ -299,13 +299,13 @@ categories:
     keywords:
       - vanguard buy
       - "vgi 529"
-      # note: "vanguard sell" isn't listed here — the one sell in the data
+      # note: "vanguard sell" isn't listed here - the one sell in the data
       # (4/15/2026, $12,807.58) was part of the home purchase and is
       # excluded below with the rest of that cluster. If you have a
       # genuinely unrelated Vanguard sell in the future, add "vanguard
       # sell" back here (or a more specific keyword for it).
 
-  # --- Transfers (fully excluded — not shown anywhere in the report;
+  # --- Transfers (fully excluded - not shown anywhere in the report;
   # money moving to pay off a card whose purchases aren't itemized here) ---
   - id: transfer
     name: Transfers & Payments
@@ -320,13 +320,13 @@ categories:
       - transfer from
       - atm withdrawal
       - zelle payment
-      # These cards are paid off via ACH but not yet ingested itemized —
+      # These cards are paid off via ACH but not yet ingested itemized -
       # excluded here to avoid double-counting once they're added; until
       # then, spending on them isn't reflected in this report at all.
       - american express ach
       - bk of amer mc
       - bank of america payment
-      # one-time home purchase / closing costs — ignored entirely (not
+      # one-time home purchase / closing costs - ignored entirely (not
       # shown as spending, savings, or investments), too large a one-time
       # event to be meaningful in a monthly report
       - bridge city title
@@ -338,7 +338,7 @@ categories:
       - "check 107"
       - "check 127"
 
-# Fallback when no keyword above matches — uses the bank's own category
+# Fallback when no keyword above matches - uses the bank's own category
 # (from accounts.yaml's category_column), if the account provides one.
 source_category_fallback:
   "Bills & Utilities": bills_utilities
